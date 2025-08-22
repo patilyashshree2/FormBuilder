@@ -109,7 +109,9 @@ export default function EditForm({ params }: { params: { id: string } }) {
       
       // Validate choice fields have at least one non-empty option
       if ((field.type === "single_choice" || field.type === "multi_select")) {
-        const validOptions = (field.options || []).filter(opt => opt.trim() !== "");
+        const options: string[] = field.options ?? [];
+        const validOptions = options.filter(opt => opt.trim() !== "");
+
         if (validOptions.length === 0) {
           alert(`Please add at least one option for "${field.label}"`);
           return;
