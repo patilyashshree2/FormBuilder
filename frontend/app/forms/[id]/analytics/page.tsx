@@ -172,10 +172,13 @@ export default function Analytics({ params }: { params: { id: string } }) {
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avg. Rating</p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                  {Object.keys(an.averageRating || {}).length > 0 
-                    ? (Object.values(an.averageRating).reduce((a: any, b: any) => a + b, 0) / Object.keys(an.averageRating).length).toFixed(1)
-                    : 0
-                  }
+                {(() => {
+                  const avgMap = (an?.averageRating ?? {}) as Record<string, number>;
+                  const keys = Object.keys(avgMap);
+                  if (!keys.length) return 0;
+                  const sum = keys.reduce((s, k) => s + (avgMap[k] ?? 0), 0);
+                  return (sum / keys.length).toFixed(1);
+                })()}
                 </p>
               </div>
               <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
