@@ -4,29 +4,12 @@ import { fetchAnalytics, getForm } from "../../../api-client";
 
 const WS = process.env.NEXT_PUBLIC_WS_URL!;
 
-function asNumberRecord(obj: unknown): Record<string, number> {
-  if (obj && typeof obj === "object") {
-    const out: Record<string, number> = {};
-    for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
-      const n = Number(v);
-      if (!Number.isNaN(n)) out[k] = n;
-    }
-    return out;
-  }
-  return {};
-}
-
-
 export default function Analytics({ params }: { params: { id: string } }) {
   const id = params.id;
   const [form, setForm] = useState<any>(null);
   const [an, setAn] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [connected, setConnected] = useState(false);
-
-  const avgMap = asNumberRecord(an?.averageRating);
-  const vals = Object.values(avgMap);
-  const overallAverage = vals.length ? vals.reduce((s, n) => s + n, 0) / vals.length : 0;
 
   async function refresh() {
     try {
@@ -79,8 +62,6 @@ export default function Analytics({ params }: { params: { id: string } }) {
       </div>
     );
   }
-
-  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -150,7 +131,13 @@ export default function Analytics({ params }: { params: { id: string } }) {
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avg. Rating</p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                  {/* {overallAverage.toFixed(2)} */}
+                {(() => {
+                  const avg = (an?.averageRating ?? {}) as Record<string, number>;
+                  const vals = Object.values(avg);
+                  return vals.length
+                    ? (vals.reduce((s, n) => s + n, 0) / vals.length).toFixed(2)
+                    : 0;
+                })()}
                 </p>
               </div>
               <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
